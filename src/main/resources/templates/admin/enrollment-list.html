@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="~{fragments/layout :: layout('Quản lý đăng ký', ~{::content})}">
+<body>
+<div th:fragment="content">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Đăng ký khóa học</h3>
+</div>
+
+<form class="row g-2 mb-3" method="get">
+    <div class="col-auto">
+        <select class="form-select" name="status">
+            <option value="">Tất cả trạng thái</option>
+            <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}" th:selected="${st == status}"></option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <input class="form-control" name="q" placeholder="Tìm theo tên học viên hoặc khóa học" th:value="${q}">
+    </div>
+    <div class="col-auto"><button class="btn btn-outline-secondary">Lọc</button></div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>Học viên</th>
+            <th>Khóa học</th>
+            <th>Trạng thái</th>
+            <th>Ngày đăng ký</th>
+            <th>Ghi chú</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="e, stat : ${enrollments}">
+            <td th:text="${stat.index + 1 + enrollments.size*enrollments.number}"></td>
+            <td>
+                <div th:text="${e.student.name}"></div>
+                <small class="text-muted" th:text="${e.student.email}"></small>
+            </td>
+            <td th:text="${e.course.title}"></td>
+            <td>
+                <span class="badge"
+                      th:classappend="${e.status.name() == 'APPROVED'} ? 'bg-success' : (${e.status.name() == 'PENDING'} ? 'bg-warning' : 'bg-danger')"
+                      th:text="${e.status}"></span>
+            </td>
+            <td th:text="${#temporals.format(e.enrolledAt, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${e.notes}"></td>
+            <td>
+                <div class="btn-group" role="group">
+                    <form th:if="${e.status == T(org.example.coursehub.entity.EnrollmentStatus).PENDING}"
+                          th:action="@{'/admin/enrollments/' + ${e.id} + '/approve'}" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-success" title="Duyệt">
+                            <i class="bi bi-check"></i>
+                        </button>
+                    </form>
+                    <form th:if="${e.status == T(org.example.coursehub.entity.EnrollmentStatus).PENDING}"
+                          th:action="@{'/admin/enrollments/' + ${e.id} + '/cancel'}" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-warning" title="Hủy">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </form>
+                    <form th:action="@{'/admin/enrollments/' + ${e.id} + '/delete'}" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa đăng ký này?')" title="Xóa">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<nav class="mt-3" th:if="${enrollments.totalPages>1}">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${enrollments.first}? 'disabled'">
+            <a class="page-link" th:href="@{|/admin/enrollments?status=${status}&q=${q}&page=${enrollments.number-1}|}">Trước</a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, enrollments.totalPages-1)}" th:classappend="${i==enrollments.number}? 'active'">
+            <a class="page-link" th:text="${i+1}" th:href="@{|/admin/enrollments?status=${status}&q=${q}&page=${i}|}"></a>
+        </li>
+        <li class="page-item" th:classappend="${enrollments.last}? 'disabled'">
+            <a class="page-link" th:href="@{|/admin/enrollments?status=${status}&q=${q}&page=${enrollments.number+1}|}">Sau</a>
+        </li>
+    </ul>
+</nav>
+</div>
+</body>
+</html>

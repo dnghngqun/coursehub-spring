@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="~{fragments/layout :: layout('Giảng viên', ~{::content})}">
+<body>
+<div th:fragment="content">
+<form class="card card-body" th:action="${item} != null ? @{'/admin/instructors/' + ${item.id}} : @{/admin/instructors}" method="post" enctype="multipart/form-data">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Tên</label>
+            <input class="form-control" name="name" th:value="${item != null ? item.name : ''}" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" name="email" th:value="${item != null ? item.email : ''}" required>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Giới thiệu</label>
+            <textarea class="form-control" name="bio" rows="4" th:text="${item != null ? item.bio : ''}"></textarea>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Avatar</label>
+            <input class="form-control" type="file" name="avatar" accept="image/*">
+            <img th:if="${item != null && item.avatar != null}" th:src="@{'/uploads/' + ${item.avatar}}" class="rounded mt-2" style="width:80px;height:80px;object-fit:cover;">
+        </div>
+    </div>
+    <div class="mt-3"><button class="btn btn-primary" data-loading>Lưu</button></div>
+</form>
+</div>
+</body>
+</html>

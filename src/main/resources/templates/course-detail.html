@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="~{fragments/layout :: layout(${course.title}, ~{::content})}">
+<body>
+<div th:fragment="content">
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <img th:if="${course.thumbnailPath!=null}" th:src="@{'/uploads/' + ${course.thumbnailPath}}"
+                 class="card-img-top" style="height: 300px; object-fit: cover;" alt="Course thumbnail">
+            <div class="card-body">
+                <h1 class="card-title" th:text="${course.title}"></h1>
+                <p class="lead text-muted" th:text="${course.shortDesc}"></p>
+
+                <div class="mt-4">
+                    <h5>Mô tả khóa học</h5>
+                    <div th:utext="${course.content}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card sticky-top" style="top: 20px;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="h4 text-primary" th:text="${course.price != null ? #numbers.formatDecimal(course.price,0,'COMMA',0,'POINT') + ' ₫' : 'Miễn phí'}"></span>
+                </div>
+
+                <div class="mb-3">
+                    <h6>Giảng viên</h6>
+                    <div class="d-flex align-items-center">
+                        <img th:if="${course.instructor.avatar!=null}"
+                             th:src="@{'/uploads/' + ${course.instructor.avatar}}"
+                             class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                        <div>
+                            <div class="fw-semibold" th:text="${course.instructor.name}"></div>
+                            <small class="text-muted" th:text="${course.instructor.email}"></small>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-muted" th:text="${course.instructor.bio}"></p>
+                </div>
+
+                <div class="mb-3">
+                    <h6>Danh mục</h6>
+                    <span class="badge bg-secondary" th:text="${course.category.name}"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#enrollModal">
+                        <i class="bi bi-person-plus"></i> Đăng ký ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enrollment Modal -->
+<div class="modal fade" id="enrollModal" tabindex="-1" aria-labelledby="enrollModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{'/courses/' + ${course.id} + '/enroll'}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="enrollModalLabel">Đăng ký khóa học</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Họ tên *</label>
+                        <input type="text" class="form-control" name="studentName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" name="studentEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" name="studentPhone">
+                    </div>
+                    <div class="alert alert-info">
+                        <small><i class="bi bi-info-circle"></i> Sau khi đăng ký, chúng tôi sẽ liên hệ với bạn để xác nhận và hướng dẫn thanh toán.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Đăng ký</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

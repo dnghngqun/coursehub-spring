@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="fragments/layout :: layout('Không tìm thấy', ~{::content})">
+<body>
+<div class="text-center py-5">
+    <h1 class="display-3">404</h1>
+    <p class="lead">Trang bạn tìm không tồn tại.</p>
+    <a class="btn btn-outline-primary" th:href="@{/}">Về trang chủ</a>
+</div>
+</body>
+</html>

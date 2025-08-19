@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="~{fragments/layout :: layout('Quản lý khóa học', ~{::content})}">
+<body>
+<div th:fragment="content">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Khóa học</h3>
+    <a class="btn btn-primary" th:href="@{'/admin/courses/new'}"><i class="bi bi-plus-lg"></i> Tạo khóa học</a>
+</div>
+<form class="row g-2 mb-3" method="get">
+    <div class="col-auto">
+        <input class="form-control" name="q" placeholder="Tìm theo tên" th:value="${q}">
+    </div>
+    <div class="col-auto">
+        <select class="form-select" name="category">
+            <option value="">Tất cả danh mục</option>
+            <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${c.id==category}"></option>
+        </select>
+    </div>
+    <div class="col-auto"><button class="btn btn-outline-secondary">Lọc</button></div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>Tiêu đề</th>
+            <th>Danh mục</th>
+            <th>Giảng viên</th>
+            <th>Giá</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c, stat : ${courses}">
+            <td th:text="${stat.index + 1 + courses.size*courses.number}"></td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <img th:if="${c.thumbnailPath!=null}" th:src="@{'/uploads/' + ${c.thumbnailPath}}" class="rounded me-2" style="width:56px;height:32px;object-fit:cover;">
+                    <div>
+                        <div class="fw-semibold" th:text="${c.title}"></div>
+                        <small class="text-secondary" th:text="${c.slug}"></small>
+                    </div>
+                </div>
+            </td>
+            <td th:text="${c.category.name}"></td>
+            <td th:text="${c.instructor.name}"></td>
+            <td th:text="${c.price != null ? #numbers.formatDecimal(c.price,0,'COMMA',0,'POINT') + ' ₫' : 'Miễn phí'}"></td>
+            <td>
+                <a th:href="@{'/admin/courses/' + ${c.id} + '/edit'}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                <form th:action="@{'/admin/courses/' + ${c.id} + '/delete'}" method="post" class="d-inline">
+                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa khóa học này?')"><i class="bi bi-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<nav class="mt-3" th:if="${courses.totalPages>1}">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${courses.first}? 'disabled'">
+            <a class="page-link" th:href="@{|/admin/courses?q=${q}&category=${category}&page=${courses.number-1}|}">Trước</a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, courses.totalPages-1)}" th:classappend="${i==courses.number}? 'active'">
+            <a class="page-link" th:text="${i+1}" th:href="@{|/admin/courses?q=${q}&category=${category}&page=${i}|}"></a>
+        </li>
+        <li class="page-item" th:classappend="${courses.last}? 'disabled'">
+            <a class="page-link" th:href="@{|/admin/courses?q=${q}&category=${category}&page=${courses.number+1}|}">Sau</a>
+        </li>
+    </ul>
+</nav>
+</div>
+</body>
+</html>

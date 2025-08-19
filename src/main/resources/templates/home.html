@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="~{fragments/layout :: layout('Trang chủ', ~{::content})}">
+<body>
+
+<div th:fragment="content">
+    <!-- Hero Section -->
+    <section class="py-5 bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: -1.5rem -15px 0 -15px;" data-aos="fade-up">
+        <div class="container text-center text-white">
+            <h1 class="display-4 fw-bold mb-3">Khám phá khoá học nổi bật</h1>
+            <p class="lead mb-4">Nâng cấp kỹ năng của bạn với những khóa học chất lượng cao</p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form method="get" th:action="@{/}" class="d-flex gap-2">
+                        <input type="text" class="form-control form-control-lg" name="q" th:value="${q}"
+                               placeholder="Tìm kiếm khóa học..." style="border-radius: 25px;">
+                        <button class="btn btn-light btn-lg px-4" style="border-radius: 25px;">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="py-4 bg-light border-bottom">
+        <div class="container">
+            <form method="get" th:action="@{/}" class="row g-3 align-items-end">
+                <input type="hidden" name="q" th:value="${q}">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-tags text-primary"></i> Danh mục
+                    </label>
+                    <select name="category" class="form-select">
+                        <option th:selected="${category==null}" value="">🎯 Tất cả danh mục</option>
+                        <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${category==c.id}"></option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-sort-down text-primary"></i> Sắp xếp theo
+                    </label>
+                    <select name="sort" class="form-select">
+                        <option value="createdAt,desc" th:selected="${sort=='createdAt,desc'}">🆕 Mới nhất</option>
+                        <option value="title,asc" th:selected="${sort=='title,asc'}">🔤 Tên A-Z</option>
+                        <option value="price,asc" th:selected="${sort=='price,asc'}">💰 Giá thấp → cao</option>
+                        <option value="price,desc" th:selected="${sort=='price,desc'}">💎 Giá cao → thấp</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <button class="btn btn-primary w-100" type="submit">
+                        <i class="bi bi-funnel"></i> Áp dụng bộ lọc
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Courses Grid -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col">
+                    <h2 class="h3 mb-0">
+                        <span th:if="${q != null and !q.isEmpty()}" class="text-muted">
+                            Kết quả tìm kiếm cho "<span class="text-primary" th:text="${q}"></span>"
+                        </span>
+                        <span th:unless="${q != null and !q.isEmpty()}">
+                            Danh sách khóa học
+                        </span>
+                    </h2>
+                    <small class="text-muted">Tìm thấy <span th:text="${courses.totalElements}"></span> khóa học</small>
+                </div>
+            </div>
+
+            <div class="row g-4" id="cardContainer">
+                <div class="col-12 col-md-6 col-lg-4" th:each="c : ${courses}">
+                    <div class="card h-100 course-card shadow-sm border-0" data-aos="zoom-in" style="transition: transform 0.2s;">
+                        <a th:href="@{'/courses/' + ${c.slug}}" class="text-decoration-none">
+                            <div class="position-relative">
+                                <div class="ratio ratio-16x9 bg-light skeleton" style="border-radius: 0.5rem 0.5rem 0 0;"></div>
+                                <img th:if="${c.thumbnailPath!=null}" th:src="@{'/uploads/' + ${c.thumbnailPath}}"
+                                     class="card-img-top d-none" alt="thumbnail" style="border-radius: 0.5rem 0.5rem 0 0; object-fit: cover;">
+                                <div class="position-absolute top-0 end-0 m-2">
+                                    <span class="badge bg-primary" th:text="${c.category.name}"></span>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="card-body p-3">
+                            <h5 class="card-title mb-2" th:text="${c.title}"></h5>
+                            <p class="card-text text-muted small mb-3" th:text="${c.shortDesc}"></p>
+
+                            <div class="d-flex align-items-center mb-3">
+                                <img th:if="${c.instructor.avatar!=null}" th:src="@{'/uploads/' + ${c.instructor.avatar}}"
+                                     class="rounded-circle me-2" style="width: 24px; height: 24px; object-fit: cover;">
+                                <small class="text-muted" th:text="${c.instructor.name}"></small>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-primary h5 mb-0" th:text="${c.price != null ? #numbers.formatDecimal(c.price,0,'COMMA',0,'POINT') + ' ₫' : 'Miễn phí'}"></span>
+                                <a class="btn btn-outline-primary btn-sm" th:href="@{'/courses/' + ${c.slug}}">
+                                    <i class="bi bi-arrow-right"></i> Xem chi tiết
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${courses.empty}" class="text-center py-5">
+                <i class="bi bi-search display-1 text-muted"></i>
+                <h3 class="mt-3 text-muted">Không tìm thấy khóa học nào</h3>
+                <p class="text-muted">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                <a href="/" class="btn btn-primary">Xem tất cả khóa học</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pagination -->
+    <nav class="mt-4" th:if="${courses.totalPages>1}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${courses.first}? 'disabled'">
+                <a class="page-link" th:href="@{|/?q=${q}&category=${category}&sort=${sort}&page=${courses.number-1}|}">
+                    <i class="bi bi-chevron-left"></i> Trước
+                </a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, courses.totalPages-1)}" th:classappend="${i==courses.number}? 'active'">
+                <a class="page-link" th:text="${i+1}" th:href="@{|/?q=${q}&category=${category}&sort=${sort}&page=${i}|}"></a>
+            </li>
+            <li class="page-item" th:classappend="${courses.last}? 'disabled'">
+                <a class="page-link" th:href="@{|/?q=${q}&category=${category}&sort=${sort}&page=${courses.number+1}|}">
+                    Sau <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        // Hover effects for course cards
+        document.querySelectorAll('.course-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-5px)';
+                card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = '';
+            });
+
+            // Image lazy loading
+            const img = card.querySelector('img');
+            const sk = card.querySelector('.skeleton');
+            if (img) {
+                img.addEventListener('load', () => {
+                    sk.classList.add('d-none');
+                    img.classList.remove('d-none');
+                });
+            }
+        });
+    </script>
+</div>
+
+</body>
+</html>

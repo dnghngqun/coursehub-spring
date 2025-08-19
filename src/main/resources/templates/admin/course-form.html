@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="~{fragments/layout :: layout(${course.id} != null ? 'Chỉnh sửa khóa học' : 'Tạo khóa học', ~{::content})}">
+<body>
+<div th:fragment="content">
+<form class="card" th:action="${course.id} != null ? @{'/admin/courses/' + ${course.id}} : @{/admin/courses}" method="post" enctype="multipart/form-data">
+    <div class="card-body row g-3">
+        <div class="col-lg-8">
+            <label class="form-label">Tiêu đề</label>
+            <input class="form-control" name="title" th:value="${course.title}" required>
+
+            <label class="form-label mt-3">Mô tả ngắn</label>
+            <textarea class="form-control" name="shortDesc" rows="2" th:text="${course.shortDesc}"></textarea>
+
+            <label class="form-label mt-3">Nội dung (HTML)</label>
+            <textarea class="form-control" name="content" rows="8" th:text="${course.content}"></textarea>
+        </div>
+        <div class="col-lg-4">
+            <label class="form-label">Danh mục</label>
+            <select class="form-select" name="categoryId" required>
+                <option th:each="c : ${categories}" th:value="${c.id}" th:text="${c.name}" th:selected="${course.category != null && c.id==course.category.id}"></option>
+            </select>
+
+            <label class="form-label mt-3">Giảng viên</label>
+            <select class="form-select" name="instructorId" required>
+                <option th:each="i : ${instructors}" th:value="${i.id}" th:text="${i.name}" th:selected="${course.instructor != null && i.id==course.instructor.id}"></option>
+            </select>
+
+            <label class="form-label mt-3">Giá (đ)</label>
+            <input class="form-control" name="price" th:value="${course.price}" placeholder="Để trống nếu miễn phí">
+
+            <label class="form-label mt-3">Ảnh thumbnail</label>
+            <input class="form-control" type="file" name="thumbnail" accept="image/*" onchange="previewImg(this)"/>
+            <img id="preview" class="img-fluid mt-2 rounded" th:if="${course.thumbnailPath!=null}" th:src="@{'/uploads/' + ${course.thumbnailPath}}" alt="preview">
+
+            <div class="d-grid mt-4">
+                <button class="btn btn-primary" data-loading><i class="bi bi-save"></i> Lưu</button>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    function previewImg(input){ if(input.files && input.files[0]){ const r=new FileReader(); r.onload=e=>{document.getElementById('preview').src=e.target.result}; r.readAsDataURL(input.files[0]); } }
+</script>
+</div>
+</body>
+</html>

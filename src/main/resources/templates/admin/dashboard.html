@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="~{fragments/layout :: layout('Bảng điều khiển', ~{::content})}">
+<body>
+<div th:fragment="content">
+<div class="row g-4">
+    <div class="col-md-4" data-aos="fade-up">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-1">Tổng khóa học</h5>
+                        <div class="display-6" th:text="${totalCourses}"></div>
+                    </div>
+                    <i class="bi bi-journal-richtext display-4 text-primary"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-1">Tổng lượt đăng ký</h5>
+                        <div class="display-6" th:text="${totalEnrollments}"></div>
+                    </div>
+                    <i class="bi bi-people display-4 text-success"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5 class="mb-1">Đăng ký hôm nay</h5>
+                        <div class="display-6" th:text="${todayEnrollments}"></div>
+                    </div>
+                    <i class="bi bi-calendar-check display-4 text-info"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quản lý nhanh</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="/admin/courses" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-journal-richtext"></i> Khóa học
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/admin/instructors" class="btn btn-outline-success w-100">
+                            <i class="bi bi-person-workspace"></i> Giảng viên
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/admin/students" class="btn btn-outline-info w-100">
+                            <i class="bi bi-people"></i> Học viên
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="/admin/enrollments" class="btn btn-outline-warning w-100">
+                            <i class="bi bi-clipboard-check"></i> Đăng ký
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

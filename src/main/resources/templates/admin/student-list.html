@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi" th:replace="~{fragments/layout :: layout('Quản lý học viên', ~{::content})}">
+<body>
+<div th:fragment="content">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Học viên</h3>
+    <a class="btn btn-primary" th:href="@{'/admin/students/new'}"><i class="bi bi-plus-lg"></i> Thêm học viên</a>
+</div>
+
+<form class="row g-2 mb-3" method="get">
+    <div class="col-auto">
+        <input class="form-control" name="q" placeholder="Tìm theo tên hoặc email" th:value="${q}">
+    </div>
+    <div class="col-auto"><button class="btn btn-outline-secondary">Tìm kiếm</button></div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>#</th>
+            <th>Tên</th>
+            <th>Email</th>
+            <th>Số điện thoại</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="s, stat : ${students}">
+            <td th:text="${stat.index + 1 + students.size*students.number}"></td>
+            <td th:text="${s.name}"></td>
+            <td th:text="${s.email}"></td>
+            <td th:text="${s.phone}"></td>
+            <td th:text="${#temporals.format(s.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+            <td>
+                <a th:href="@{'/admin/students/' + ${s.id} + '/edit'}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                <form th:action="@{'/admin/students/' + ${s.id} + '/delete'}" method="post" class="d-inline">
+                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa học viên này?')"><i class="bi bi-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<nav class="mt-3" th:if="${students.totalPages>1}">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${students.first}? 'disabled'">
+            <a class="page-link" th:href="@{|/admin/students?q=${q}&page=${students.number-1}|}">Trước</a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, students.totalPages-1)}" th:classappend="${i==students.number}? 'active'">
+            <a class="page-link" th:text="${i+1}" th:href="@{|/admin/students?q=${q}&page=${i}|}"></a>
+        </li>
+        <li class="page-item" th:classappend="${students.last}? 'disabled'">
+            <a class="page-link" th:href="@{|/admin/students?q=${q}&page=${students.number+1}|}">Sau</a>
+        </li>
+    </ul>
+</nav>
+</div>
+</body>
+</html>
